@@ -1,0 +1,6 @@
+*~
+/__pycache__/
+*flymake.py
+*.svg
+/example.py
+/poetry.lock
