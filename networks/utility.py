@@ -4,6 +4,8 @@ Utility functions for sorting networks
 
 from typing import List, Tuple
 from functools import partial
+from collections import Counter
+from itertools import chain
 
 def flip(fst: int, snd: int, trg: int) -> int:
     """
@@ -28,7 +30,7 @@ def standardize(net: List[Tuple[int, int]]) -> List[Tuple[int, int]]:
 
         # Find bad pair
         place = None
-        for ind, (left, right) in net:
+        for ind, (left, right) in enumerate(net):
             if left > right:
                 place = ind
                 lft, rgt = left, right
@@ -45,3 +47,8 @@ def standardize(net: List[Tuple[int, int]]) -> List[Tuple[int, int]]:
 
     print(f"There were {changes} changes")
         
+def network_histogram(net: List[Tuple[int, int]]) -> Counter:
+    """
+    Return a histogram of the number of times an element is touched.
+    """
+    return Counter(chain(*net))

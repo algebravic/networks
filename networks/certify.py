@@ -89,7 +89,7 @@ def certify(network: List[Tuple[int, int]]):
 
 def get_example(model: List[int], pool: IDPool) -> List[int]:
     """
-    Get the countexample.
+    Get the counterexample.
     """
 
     values = [(pool.obj(abs(_)), int(_ > 0)) for _ in model]
