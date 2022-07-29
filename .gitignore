@@ -1,6 +1,6 @@
+*gitignore
+networks/__pychache__/
 *~
-/__pycache__/
+other/
 *flymake.py
-*.svg
-/example.py
-/poetry.lock
+poetry.lock
