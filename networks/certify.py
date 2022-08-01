@@ -115,7 +115,7 @@ def get_example(model: List[int], pool: IDPool) -> List[int]:
     return [_[1] for _ in sorted(x_values)]
 
 def certify_network(network: List[Tuple[int, int]],
-                    solver_name: str = 'cadical',
+                    solver_name: str = 'glucose3',
                     with_proof = False):
     """
     Use cadical to certify the sorting network, or provide a 0/1
