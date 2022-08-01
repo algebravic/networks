@@ -29,7 +29,23 @@ def check_network(network: List[Tuple[int, int]]):
         print("There are gaps!")
     return channels
 
-def certify(network: List[Tuple[int, int]]):
+def is_unsorted(values: List[int], pool:IDPool, stem='x', sense: bool = True):
+
+    unsorted = []
+
+    for ind, (lft, rgt) in enumerate(zip(values[:-1], values[1:])):
+
+        var = pool.id((stem, ind))
+        unsorted.append(var)
+
+        yield from [[-var, rgt], [-var, -lft], [var, -rgt, lft]]
+
+    if sense: # unsorted
+        yield unsorted
+    else:
+        yield from ([-_] for _ in unsorted)
+
+def certify(network: List[Tuple[int, int]], merger: int = 0):
     """
     Test a putative sorting network using the 0/1 principle.
     Construct a SAT model to find a counterexample 0/1 sequence
@@ -39,6 +55,9 @@ def certify(network: List[Tuple[int, int]]):
     We then output a proof of UNSAT in DRUP format.
 
     If SAT we output a counterexample.
+
+    If merger != 0, this will certify a merging network
+    for (merger, num - merger) split.
     """
 
     channels = check_network(network)
@@ -50,6 +69,10 @@ def certify(network: List[Tuple[int, int]]):
 
     # These are are the original values
     xvars = [pool.id(('x', _)) for _ in range(channels)]
+
+    if merger:
+        cnf.extend(list(is_unsorted(xvars[: merger], pool, stem = 'bottom', sense = False)))
+        cnf.extend(list(is_unsorted(xvars[merger: ], pool, stem = 'top', sense = False)))
 
     # These will be the current values after apply an initial segment of the network
     values = xvars.copy()
@@ -75,15 +98,7 @@ def certify(network: List[Tuple[int, int]]):
 
     # Now Make up the unsorted CNF
 
-    unsorted = [pool.id(('unsort', _)) for _ in range(channels - 1)]
-
-    for ind in range(channels - 1):
-
-        cnf.extend([[-unsorted[ind], values[ind]],
-                    [-unsorted[ind], -values[ind + 1]],
-                    [-values[ind], values[ind + 1], unsorted[ind]]])
-
-    cnf.append(unsorted)
+    cnf.extend(list(is_unsorted(values, pool, stem = 'unsort')))
 
     return cnf, pool
 
